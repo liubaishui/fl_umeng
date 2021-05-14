@@ -2,6 +2,7 @@ package flutter.umeng
 
 import com.umeng.analytics.MobclickAgent
 import com.umeng.commonsdk.UMConfigure
+import com.umeng.commonsdk.statistics.common.DeviceConfig
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.FlutterPlugin.FlutterPluginBinding
 import io.flutter.plugin.common.MethodChannel
@@ -21,6 +22,19 @@ class UmengPlugin : FlutterPlugin {
                     val channel = call.argument<String>("channel")
                     UMConfigure.init(context, androidAppKey, channel, UMConfigure.DEVICE_TYPE_PHONE, null)
                     result.success(true)
+                }
+                "getTestDeviceInfo" -> {
+                    val deviceInfo = arrayOfNulls<String>(2)
+                    try {
+                        if (context != null) {
+                            deviceInfo[0] = DeviceConfig.getDeviceIdForGeneral(context)
+                            deviceInfo[1] = DeviceConfig.getMac(context)
+                        }
+                    } catch (e: Exception) {
+                    }
+
+                    val retString = deviceInfo[0] + "|" + deviceInfo[1]
+                    result.success(retString);
                 }
                 "onEvent" -> {
                     val event = call.argument<String>("event")

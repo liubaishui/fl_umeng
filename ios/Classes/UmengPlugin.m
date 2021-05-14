@@ -28,6 +28,12 @@
         }else if ([@"onProfileSignOff" isEqualToString:call.method]){
             [MobClick profileSignOff];
             result([NSNumber numberWithBool:YES]);
+        }else if ([@"getTestDeviceInfo" isEqualToString:call.method]){
+            //此函数在UMCommon.framework版本1.4.2及以上版本，在UMConfigure.h的头文件中加入。
+            //如果用户用组件化SDK,需要升级最新的UMCommon.framework版本。
+            NSString *deviceID =[UMConfigure deviceIDForIntegration];
+            NSLog(@"集成测试的deviceID:%@", deviceID);
+            result([NSString stringWithFormat:@"oid: %@", deviceID]);//返回结果给Dart);
         }else if ([@"setPageCollectionModeAuto" isEqualToString:call.method]){
             [MobClick setAutoPageEnabled:YES];
             result([NSNumber numberWithBool:YES]);

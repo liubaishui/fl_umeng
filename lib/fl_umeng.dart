@@ -80,6 +80,10 @@ Future<bool?> reportErrorWithUM(Map<String, String> error) async {
   return await _channel.invokeMethod<bool?>('reportError', error);
 }
 
+Future<String?> getTestDeviceInfo() async {
+  return await _channel.invokeMethod<String?>('getTestDeviceInfo');
+}
+
 bool _supportPlatform() {
   if (!(Platform.isAndroid || Platform.isIOS)) {
     print('fl_umeng is not support ${Platform.operatingSystem}');
