@@ -34,7 +34,7 @@ class UmengPlugin : FlutterPlugin {
                     }
 
                     val retString = deviceInfo[0] + "|" + deviceInfo[1]
-                    result.success(retString);
+                    result.success(retString)
                 }
                 "onEvent" -> {
                     val event = call.argument<String>("event")
