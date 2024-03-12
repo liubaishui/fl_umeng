@@ -1,55 +1,71 @@
-#import "UmengPlugin.h"
+#import "UMengPlugin.h"
 #import <UMCommon/UMConfigure.h>
 #import <UMCommon/MobClick.h>
 
-@implementation UmengPlugin
+@implementation UMengPlugin
 
-+ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-    FlutterMethodChannel* channel = [FlutterMethodChannel
-                                     methodChannelWithName:@"UMeng"
-                                     binaryMessenger:registrar.messenger];
-    
-    [channel setMethodCallHandler:^(FlutterMethodCall * _Nonnull call, FlutterResult  _Nonnull result) {
-        NSDictionary *args = call.arguments;
-        if ([@"init" isEqualToString:call.method]){
++ (void)registerWithRegistrar:(NSObject <FlutterPluginRegistrar> *)registrar {
+    FlutterMethodChannel *channel = [FlutterMethodChannel
+            methodChannelWithName:@"UMeng"
+                  binaryMessenger:registrar.messenger];
+
+    [channel setMethodCallHandler:^(FlutterMethodCall *_Nonnull call, FlutterResult _Nonnull result) {
+        if ([@"init" isEqualToString:call.method]) {
+            NSDictionary *args = call.arguments;
             [UMConfigure initWithAppkey:args[@"appKey"] channel:args[@"channel"]];
-            result([NSNumber numberWithBool:YES]);
-        }else  if([@"onEvent" isEqualToString:call.method]){
+            result(@(YES));
+        } else if ([@"getUMId" isEqualToString:call.method]) {
+            NSString *zid = [UMConfigure getUmengZID];
+            NSString *uid = [UMConfigure umidString];
+            result(@{
+                    @"umId": uid == nil ? @"" : uid,
+                    @"umzId": zid == nil ? @"" : zid
+            });
+        } else if ([@"getDeviceInfo" isEqualToString:call.method]) {
+            result(@{
+                    @"isJailbroken": @([MobClick isJailbroken]),
+                    @"isPirated": @([MobClick isPirated]),
+                    @"isProxy": @([MobClick isProxy]),
+            });
+        } else if ([@"setEncryptEnabled" isEqualToString:call.method]) {
+            [UMConfigure setEncryptEnabled:[call.arguments boolValue]];
+            result(@(YES));
+        } else if ([@"getTestDeviceInfo" isEqualToString:call.method]) {
+            result([UMConfigure deviceIDForIntegration]);
+        } else if ([@"setLogEnabled" isEqualToString:call.method]) {
+            [UMConfigure setLogEnabled:[call.arguments boolValue]];
+            result(@(YES));
+        } else if ([@"onEvent" isEqualToString:call.method]) {
+            NSDictionary *args = call.arguments;
             [MobClick event:args[@"event"] attributes:args[@"properties"]];
-            result([NSNumber numberWithBool:YES]);
-        }else if ([@"onProfileSignIn" isEqualToString:call.method]){
+            result(@(YES));
+        } else if ([@"onProfileSignIn" isEqualToString:call.method]) {
+            NSDictionary *args = call.arguments;
             NSString *provider = args[@"provider"];
-            if(provider){
+            if (provider) {
                 [MobClick profileSignInWithPUID:args[@"userID"] provider:provider];
-            }else{
+            } else {
                 [MobClick profileSignInWithPUID:args[@"userID"]];
             }
-            result([NSNumber numberWithBool:YES]);
-        }else if ([@"onProfileSignOff" isEqualToString:call.method]){
+            result(@(YES));
+        } else if ([@"onProfileSignOff" isEqualToString:call.method]) {
             [MobClick profileSignOff];
-            result([NSNumber numberWithBool:YES]);
-        }else if ([@"getTestDeviceInfo" isEqualToString:call.method]){
-            //此函数在UMCommon.framework版本1.4.2及以上版本，在UMConfigure.h的头文件中加入。
-            //如果用户用组件化SDK,需要升级最新的UMCommon.framework版本。
-            NSString *deviceID =[UMConfigure deviceIDForIntegration];
-            NSLog(@"集成测试的deviceID:%@", deviceID);
-            result([NSString stringWithFormat:@"oid: %@", deviceID]);//返回结果给Dart);
-        }else if ([@"setPageCollectionModeAuto" isEqualToString:call.method]){
+            result(@(YES));
+        } else if ([@"setPageCollectionModeAuto" isEqualToString:call.method]) {
             [MobClick setAutoPageEnabled:YES];
-            result([NSNumber numberWithBool:YES]);
-        }else if ([@"setPageCollectionModeManual" isEqualToString:call.method]){
+            result(@(YES));
+        } else if ([@"setPageCollectionModeManual" isEqualToString:call.method]) {
             [MobClick setAutoPageEnabled:NO];
-            result([NSNumber numberWithBool:YES]);
-        }else if ([@"onPageStart" isEqualToString:call.method]){
-            [MobClick beginLogPageView:args[@"pageName"]];
-            result([NSNumber numberWithBool:YES]);
-        }else if ([@"onPageEnd" isEqualToString:call.method]){
-            [MobClick endLogPageView:args[@"pageName"]];
-            result([NSNumber numberWithBool:YES]);
-        }else {
+            result(@(YES));
+        } else if ([@"onPageStart" isEqualToString:call.method]) {
+            [MobClick beginLogPageView:call.arguments];
+            result(@(YES));
+        } else if ([@"onPageEnd" isEqualToString:call.method]) {
+            [MobClick endLogPageView:call.arguments];
+            result(@(YES));
+        } else {
             result(FlutterMethodNotImplemented);
         }
     }];
-
 }
 @end

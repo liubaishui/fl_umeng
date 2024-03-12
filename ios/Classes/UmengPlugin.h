@@ -1,5 +1,5 @@
 #import <Flutter/Flutter.h>
 
-@interface UmengPlugin : NSObject<FlutterPlugin>
+@interface UMengPlugin : NSObject <FlutterPlugin>
 
 @end

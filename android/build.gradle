@@ -1,16 +1,17 @@
-group 'flutter.umeng'
+group 'fl.umeng'
 version '1.0'
 
 buildscript {
+    ext.kotlin_version = '1.8.0'
     repositories {
         google()
         mavenCentral()
-        maven { url 'https://dl.bintray.com/umsdk/release' }
+        maven { url 'https://repo1.maven.org/maven2/' }
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.4'
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.10'
+        classpath 'com.android.tools.build:gradle:7.0.4'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
@@ -18,7 +19,7 @@ rootProject.allprojects {
     repositories {
         google()
         mavenCentral()
-        maven { url 'https://dl.bintray.com/umsdk/release' }
+        maven { url 'https://repo1.maven.org/maven2/' }
     }
 }
 
@@ -26,7 +27,12 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 30
+    compileSdk 33
+
+    if (project.android.hasProperty("namespace")) {
+        namespace 'fl.umeng'
+    }
+
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
@@ -34,6 +40,7 @@ android {
         minSdkVersion 16
         consumerProguardFiles 'consumer-rules.pro'
     }
+
     packagingOptions {
         merge 'AndroidManifest.xml'
         merge 'R.txt'
@@ -44,8 +51,9 @@ android {
 }
 
 dependencies {
-    implementation 'com.umeng.umsdk:common:9.3.8'
-    implementation 'com.umeng.umsdk:asms:1.2.2'
+    api 'com.umeng.umsdk:common:9.6.7'
+    api 'com.umeng.umsdk:asms:1.8.0'
+    api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
 repositories {
